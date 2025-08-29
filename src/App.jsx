@@ -1,47 +1,62 @@
-import React, { useState } from 'react'
-import SearchBar from './components/SearchBar.jsx'
-import WeatherCard from './components/WeatherCard.jsx'
-import ErrorMessage from './components/ErrorMessage.jsx'
-import useWeather from './hooks/useWeather.js'
+import { useState } from "react";
+import useWeather from "./hooks/useWeather";
+import LoadingSpinner from "./components/LoadingSpinner";
+import ErrorBanner from "./components/ErrorBanner";
+import WeatherCard from "./components/WeatherCard";
 
 export default function App() {
-  const [city, setCity] = useState('Nairobi')
-  const { data, loading, error, refresh } = useWeather(city)
+  const [city, setCity] = useState("");
+  const { data, loading, error, fetchWeather } = useWeather();
+
+  function onSubmit(e) {
+    e.preventDefault();
+    fetchWeather(city);
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-100 to-slate-100 text-slate-900">
-      <header className="max-w-3xl mx-auto px-4 py-8">
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight">🌦️ Weather Dashboard</h1>
-        <p className="text-sm text-slate-600 mt-1">Powered by OpenWeatherMap</p>
-      </header>
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 to-blue-100">
+      <div className="max-w-3xl mx-auto px-4 py-8">
+        <header className="mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold">Weather Dashboard</h1>
+          <p className="text-gray-600">Search a city to see the current weather.</p>
+        </header>
 
-      <main className="max-w-3xl mx-auto px-4 pb-16 space-y-6">
-        <SearchBar onSearch={setCity} />
-        <div className="flex items-center gap-3">
+        <form onSubmit={onSubmit} className="flex gap-2">
+          <input
+            className="flex-1 rounded-2xl border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="e.g., Nairobi"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+          />
           <button
-            onClick={refresh}
-            className="px-4 py-2 rounded-xl bg-sky-600 text-white hover:bg-sky-700 transition shadow"
-            aria-label="Refresh weather"
+            type="submit"
+            className="rounded-2xl px-5 py-3 bg-blue-600 text-white font-medium hover:bg-blue-700 active:scale-[0.99]"
           >
-            Refresh
+            Search
           </button>
-          <span className="text-xs text-slate-500">
-            Auto-updates every 5 minutes
-          </span>
-        </div>
+        </form>
 
-        {loading && (
-          <div className="p-4 rounded-xl bg-white shadow border border-slate-200">Loading current weather…</div>
+        <ErrorBanner message={error} />
+
+        {loading && <LoadingSpinner />}
+
+        {!loading && data && (
+          <div className="mt-4">
+            <WeatherCard
+              name={data.name}
+              country={data.country}
+              temp={data.temp}
+              condition={data.condition}
+              description={data.description}
+              icon={data.icon}
+              humidity={data.humidity}
+              wind={data.wind}
+              dt={data.dt}
+              timezone={data.timezone}
+            />
+          </div>
         )}
-
-        {error && <ErrorMessage message={error} />}
-
-        {data && !error && <WeatherCard weather={data} />}
-      </main>
-
-      <footer className="max-w-3xl mx-auto px-4 pb-8 text-center text-xs text-slate-500">
-        Built with React + Tailwind. © {new Date().getFullYear()}
-      </footer>
+      </div>
     </div>
-  )
+  );
 }
