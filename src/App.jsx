@@ -1,7 +1,7 @@
 import { useState } from "react";
 import useWeather from "./hooks/useWeather";
 import LoadingSpinner from "./components/LoadingSpinner";
-import ErrorBanner from "./components/ErrorBanner";
+import ErrorMessage from "./components/ErrorMessage";
 import WeatherCard from "./components/WeatherCard";
 
 export default function App() {
@@ -18,7 +18,9 @@ export default function App() {
       <div className="max-w-3xl mx-auto px-4 py-8">
         <header className="mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold">Weather Dashboard</h1>
-          <p className="text-gray-600">Search a city to see the current weather.</p>
+          <p className="text-gray-600">
+            Search a city to see the current weather.
+          </p>
         </header>
 
         <form onSubmit={onSubmit} className="flex gap-2">
@@ -36,7 +38,7 @@ export default function App() {
           </button>
         </form>
 
-        <ErrorBanner message={error} />
+        {error && <ErrorMessage message={error} />}
 
         {loading && <LoadingSpinner />}
 

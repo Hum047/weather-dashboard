@@ -1,45 +1,52 @@
-import React from 'react'
+function formatLocal(dt, timezone) {
+  if (!dt) return "";
+  const ms = (dt + (timezone ?? 0)) * 1000; // dt is UTC seconds; add shift
+  return new Date(ms).toLocaleString();
+}
 
-export default function WeatherCard({ weather }) {
-  const { name, sys, main, wind, weather: w } = weather
-  const cond = w && w.length ? w[0] : null
-  const icon = cond ? `https://openweathermap.org/img/wn/${cond.icon}@2x.png` : null
+export default function WeatherCard({
+  name,
+  country,
+  temp,
+  condition,
+  description,
+  icon,
+  humidity,
+  wind,
+  dt,
+  timezone,
+}) {
+  const iconUrl = icon ? `https://openweathermap.org/img/wn/${icon}@2x.png` : null;
 
   return (
-    <section className="rounded-2xl bg-white shadow border border-slate-200 p-6">
-      <div className="flex items-start justify-between">
+    <div className="rounded-2xl shadow-lg p-5 bg-white/80 backdrop-blur border border-gray-100">
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-semibold">{name}{sys?.country ? `, ${sys.country}` : ''}</h2>
-          <p className="text-slate-500">{cond?.main}{cond?.description ? ` • ${cond.description}` : ''}</p>
+          <h2 className="text-xl font-semibold">{name}{country ? `, ${country}` : ""}</h2>
+          <p className="text-sm text-gray-500">{formatLocal(dt, timezone)}</p>
         </div>
-        {icon && (
-          <img
-            src={icon}
-            alt={cond?.description || 'weather icon'} width="80" height="80"
-            className="select-none"
-          />
-        )}
+        {iconUrl && <img src={iconUrl} alt={description || condition} className="h-16 w-16" />}
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-        <div className="p-4 rounded-xl bg-sky-50 border border-sky-100">
-          <div className="text-xs text-slate-500">Temperature</div>
-          <div className="text-2xl font-semibold">{Math.round(main.temp)}°C</div>
-          <div className="text-xs text-slate-500">Feels like {Math.round(main.feels_like)}°C</div>
+      <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="rounded-xl bg-gray-50 p-3">
+          <p className="text-xs text-gray-500">Temperature</p>
+          <p className="text-lg font-medium">{Math.round(temp)}°C</p>
         </div>
-        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-100">
-          <div className="text-xs text-slate-500">Humidity</div>
-          <div className="text-2xl font-semibold">{Math.round(main.humidity)}%</div>
+        <div className="rounded-xl bg-gray-50 p-3">
+          <p className="text-xs text-gray-500">Condition</p>
+          <p className="text-lg font-medium">{condition}</p>
+          <p className="text-xs text-gray-500">{description}</p>
         </div>
-        <div className="p-4 rounded-xl bg-amber-50 border border-amber-100">
-          <div className="text-xs text-slate-500">Wind</div>
-          <div className="text-2xl font-semibold">{Math.round(wind.speed)} m/s</div>
+        <div className="rounded-xl bg-gray-50 p-3">
+          <p className="text-xs text-gray-500">Humidity</p>
+          <p className="text-lg font-medium">{humidity}%</p>
         </div>
-        <div className="p-4 rounded-xl bg-violet-50 border border-violet-100">
-          <div className="text-xs text-slate-500">Pressure</div>
-          <div className="text-2xl font-semibold">{Math.round(main.pressure)} hPa</div>
+        <div className="rounded-xl bg-gray-50 p-3">
+          <p className="text-xs text-gray-500">Wind</p>
+          <p className="text-lg font-medium">{wind} m/s</p>
         </div>
       </div>
-    </section>
-  )
+    </div>
+  );
 }
