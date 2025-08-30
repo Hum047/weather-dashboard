@@ -1,4 +1,6 @@
 import { useState, useRef } from "react";
+console.log("API KEY:", import.meta.env.VITE_WEATHER_API_KEY);
+
 const API = "https://api.openweathermap.org/data/2.5/weather";
 
 export default function useWeather() {
@@ -13,7 +15,6 @@ export default function useWeather() {
       setData(null);
       return;
     }
-
     setLoading(true);
     setError(null);
 
@@ -22,6 +23,7 @@ export default function useWeather() {
 
     try {
       const url = `${API}?q=${encodeURIComponent(city)}&appid=${import.meta.env.VITE_WEATHER_API_KEY}&units=metric`;
+      console.log("Fetching:", url);
       const res = await fetch(url, { signal: abortRef.current.signal });
 
       if (!res.ok) {
@@ -30,20 +32,18 @@ export default function useWeather() {
       }
 
       const json = await res.json();
-
+  
       const cleaned = {
         name: json?.name,
         country: json?.sys?.country,
         temp: json?.main?.temp,
         humidity: json?.main?.humidity,
-        wind: json?.wind?.speed,
+        wind: json?.wind?.speed, // m/s from OpenWeather
         condition: json?.weather?.[0]?.main,
         description: json?.weather?.[0]?.description,
         icon: json?.weather?.[0]?.icon,
-        dt: json?.dt,
-        timezone: json?.timezone,
-        sunrise: json?.sys?.sunrise,
-        sunset: json?.sys?.sunset,
+        dt: json?.dt,             // UTC timestamp (s)
+        timezone: json?.timezone, // shift from UTC in seconds
       };
 
       setData(cleaned);

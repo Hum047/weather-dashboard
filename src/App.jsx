@@ -39,9 +39,7 @@ export default function App() {
         </form>
 
         {error && <ErrorMessage message={error} />}
-
         {loading && <LoadingSpinner />}
-
         {!loading && data && (
           <div className="mt-4">
             <WeatherCard
@@ -55,6 +53,8 @@ export default function App() {
               wind={data.wind}
               dt={data.dt}
               timezone={data.timezone}
+              sunrise={data.sunrise}
+              sunset={data.sunset}
             />
           </div>
         )}
